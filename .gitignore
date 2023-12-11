@@ -1,0 +1,6 @@
+
+__pycache__/
+python_fastapi/
+fastapi-env/
+pyvenv.cfg
+
