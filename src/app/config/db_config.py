@@ -1,35 +1,68 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.ext.declarative import declarative_base
 
-# SQLALCHEMY_DATABASE_URL='sqlite:///./todosapp.db'
-SQLALCHEMY_DATABASE_URL='mysql+pymysql://root:1234@localhost/TodoApplicationDatabase'
-# SQLALCHEMY_DATABASE_URL='postgresql://postgres:1234@localhost/TodoApplicationDatabase'
-# SQLALCHEMY_DATABASE_URL='mysql+pymysql://root:1234@127.0.0.1:3306/TodoApplicationDatabase'
+# # SQLALCHEMY_DATABASE_URL='sqlite:///./todosapp.db'
+# SQLALCHEMY_DATABASE_URL='mysql+pymysql://root:1234@localhost/TodoApplicationDatabase'
+# # SQLALCHEMY_DATABASE_URL='postgresql://postgres:1234@localhost/TodoApplicationDatabase'
+# # SQLALCHEMY_DATABASE_URL='mysql+pymysql://root:1234@127.0.0.1:3306/TodoApplicationDatabase'
 
+# # engine=create_engine(SQLALCHEMY_DATABASE_URL,connect_args={'check_same_thread': False})
 # engine=create_engine(SQLALCHEMY_DATABASE_URL,connect_args={'check_same_thread': False})
-engine=create_engine(SQLALCHEMY_DATABASE_URL,connect_args={'check_same_thread': False})
 
-SessionLocal=sessionmaker(autocommit=False,autoflush=False,bind=engine)
+# SessionLocal=sessionmaker(autocommit=False,autoflush=False,bind=engine)
 
-Base=declarative_base()
+# Base=declarative_base()
 
  
-
-
-
-
-
-
+# singleton pattern db connection
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
 # Database configuration
-SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://root:1234@127.0.0.1:3306/todoapplicationdatabase2'
+SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://root:1234@127.0.0.1:3306/TodoApplicationDatabase'
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+class Database:
+    _instance = None  # Class variable to store the single instance
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Database, cls).__new__(cls)
+            # Initialize the singleton instance
+            cls._instance._engine = engine
+            cls._instance._SessionLocal = SessionLocal
+        return cls._instance
+
+    def get_db(self) -> Session:
+        db = self._SessionLocal() 
+        try:
+            return db  # Return the session directly
+        finally:
+            db.close()
+
+# Usage:
+db_instance = Database()  # This will always return the same instance
+db = db_instance.get_db()
+# Perform database operations using the 'db' session
+
+
+
+
+
+
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker, Session
+# from sqlalchemy.ext.declarative import declarative_base
+
+# # Database configuration
+# SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://root:1234@127.0.0.1:3306/TodoApplicationDatabase'
+# engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Base = declarative_base()
 
 # class Database:
 #     def __init__(self):
@@ -37,9 +70,9 @@ Base = declarative_base()
 #         self._SessionLocal = SessionLocal
 
 #     def get_db(self) -> Session:
-#         db = self._SessionLocal()
+#         db = self._SessionLocal() 
 #         try:
-#             yield db
+#             return db  # Return the session directly
 #         finally:
 #             db.close()
 

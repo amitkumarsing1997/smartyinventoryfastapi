@@ -2,6 +2,8 @@ from fastapi import FastAPI
 
 from app.server.routes.student import router as StudentRouter
 
+from src2.app.admin.admin_schema import AdminResponse, AdminTodoRespSchema
+
 app = FastAPI()
 
 # app.include_router(StudentRouter, tags=["Student"], prefix="/student")

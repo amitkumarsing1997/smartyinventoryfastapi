@@ -1,6 +1,7 @@
-
+.idea/
 __pycache__/
 python_fastapi/
 fastapi-env/
+src2/app/resource/
 pyvenv.cfg
 

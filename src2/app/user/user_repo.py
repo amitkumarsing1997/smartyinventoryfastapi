@@ -1,120 +1,62 @@
-from fastapi import Depends
+from fastapi import Depends,HTTPException
+
+from src2.app.auth.auth_repo import AuthRepo
 # from src.app.config.db_config import SessionLocal
 from src2.app.config.db_config import SessionLocal
 from sqlalchemy.orm import Session
 from typing import Annotated
 from src2.app.user.user_schema import CreateUserRequest
 from src2.app.models.models import Users
-
-
-# def get_db():
-#     db=SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
-# db_dependency=Annotated[Session,Depends(get_db)]
-
-
-# class UserRepo:
-#     def __init__(self,db:Session=db_dependency)->None:
-#         self.db=db
-
-
-# class UserRepo:
-#     def __init__(self, db: Session) -> None:
-#         self.db = db
-
+from src2.app.config.authkey import bcrypt_context, SECRET_KEY, ALGORITHM, oauth2_bearer
+from jose import jwt,JWTError
+from datetime import timedelta,datetime
+from starlette import status
+# from src2.app.config.db_config import Database
 
 class UserRepo:
+    # def __init__(self) -> None:
+    #  pass
+
     def __init__(self) -> None:
-     pass
-        
-    async def create_user(self, create_user_request:CreateUserRequest)->Users:
-        create_user_model = Users(
-            email=create_user_request.email,
-            username=create_user_request.username,
-            first_name=create_user_request.first_name,
-            last_name=create_user_request.last_name,
-            role=create_user_request.role,
-            hashed_password=create_user_request.password,
-            is_active=True
-        )
-        # print(type(self.db))
-        # self.db.add(create_user_model)
-        # await self.db.commit()
-        print("Successfully created")
-        print (type(create_user_model))
-        return create_user_model
+        super().__init__()
+    
+    # async def authenticate_user(self,username:str,password:str,db:Session)->Users:
+    #  user=db.query(Users).filter(Users.username==username).first()
+    #  if not user:
+    #     return False
+    #  if not bcrypt_context.verify(password,user.hashed_password):
+    #     return False
+    #  print(user.email)
+    #  return user
+    #
+    # to create token
+
+
+
+
+    # async def create_access_token(username: str,user_id:int,role:str,expires_delta:timedelta):
+    #  encode={'sub':username,'id':user_id,'role':role}
+    #  expires=datetime.utcnow()+expires_delta
+    #  encode.update({'exp':expires})
+    #  return jwt.encode(encode,SECRET_KEY,algorithm=ALGORITHM)
+
+
+    async def get_current_user(self,token: str)->dict:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get('sub')
+            user_id: int = payload.get('id')
+            user_role: str = payload.get('role')
+            if username is None or user_id is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                    detail='Could not validate user understood amit: ')
+            return {'username': username, 'id': user_id, 'user_role': user_role}
+        except JWTError:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail='Could not validate userfff: ')
+
+    
     
 
-# @router.post("/",status_code=status.HTTP_201_CREATED)
-# async def create_user(db:db_dependency,
-#                       create_user_request: CreateUserRequest):
-#     create_user_model=Users(
-#         email=create_user_request.email,
-#         username=create_user_request.username,
-#         first_name=create_user_request.first_name,
-#         last_name=create_user_request.last_name,
-#         role=create_user_request.role,
-#         # hashed_password=create_user_request.password,
-#         hashed_password=bcrypt_context.hash(create_user_request.password),
-#         is_active=True
-#     )
-#     db.add(create_user_model)
-#     db.commit()
-
-"""
-from typing import List
-
-from fastapi import APIRouter, Depends
-from typing_extensions import Annotated
-from src.app.communication.communication_iservice import ICommunicationService
-from src.app.communication.communication_schema import ReadingSchema, RepeatingSentencesSchema, JumbledSentenceSchema, \
-    OpenQuestionsSchema, StoryReTellingSchema, QuestionAnswerSchema
-from src.app.communication.communication_service import CommunicationService
-from src.app.shared.response import Response
-
-communicationRouter = APIRouter(prefix="/communication", tags=["Communication"])
-
-CommunicationServiceIns = Annotated[ICommunicationService, Depends(CommunicationService)]
 
 
-@communicationRouter.get("/reading", response_model=Response[list[ReadingSchema]], name="reading question from mongodb")
-async def get_reading(service: CommunicationServiceIns) -> Response[list[ReadingSchema]] | None:
-    return Response[list[ReadingSchema]](body=await service.reading())
-
-
-@communicationRouter.get("/repeating/sentences", response_model=Response[list[RepeatingSentencesSchema]],
-                         name="repeating question from mongodb")
-async def get_repeating_sentences(service: CommunicationServiceIns) -> Response[list[RepeatingSentencesSchema]] | None:
-    return Response[list[RepeatingSentencesSchema]](body=await service.repeating_sentences())
-
-
-@communicationRouter.get("/jumbled/sentence", response_model=Response[list[JumbledSentenceSchema]],
-                         name="jumbled question from mongodb")
-async def get_jumbled_sentences(service: CommunicationServiceIns) -> Response[list[JumbledSentenceSchema]] | None:
-    return Response[list[JumbledSentenceSchema]](body=await service.jumbled_sentences())
-
-
-@communicationRouter.get("/open/questions", response_model=Response[list[OpenQuestionsSchema]],
-                         name="open sentence from mongodb")
-async def get_open_questions(service: CommunicationServiceIns) -> Response[list[OpenQuestionsSchema]] | None:
-    return Response[list[OpenQuestionsSchema]](body=await service.open_questions())
-
-
-@communicationRouter.get("/story/re/telling", response_model=Response[list[StoryReTellingSchema]],
-                         name="story re telling from mongodb")
-async def get_reading(service: CommunicationServiceIns) -> Response[list[StoryReTellingSchema]] | None:
-    return Response[list[StoryReTellingSchema]](body=await service.story_re_telling())
-
-
-@communicationRouter.get("/question/and/answer", response_model=Response[list[QuestionAnswerSchema]],
-                         name="question and answer from mongodb")
-async def get_question_and_answer(service: CommunicationServiceIns) -> Response[list[QuestionAnswerSchema]] | None:
-    return Response[list[QuestionAnswerSchema]](body=await service.question_and_answer())
-
-
-    """

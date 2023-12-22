@@ -8,17 +8,23 @@ from typing import Annotated
 
 # open_ai: OpenAI = Depends() 
 
-userrepo : UserRepo = Depends()
+
 
 # userrepo =Annotated[UserRepo,Depends()]
 
 class UserService(IUserService):
-    def __init__(self) -> None:
+    def __init__(self, userrepo: UserRepo = Depends()) -> None:
         super().__init__()
+        self.userrepo = userrepo
+
 
     
+
     async def reg_user(self,create_user_request:CreateUserRequest):
-         await userrepo.create_user(create_user_request)
+         print("hello amit")
+         print(create_user_request)
+         print(type(self.userrepo))
+         await self.userrepo.create_user(create_user_request)
 
     # 
     

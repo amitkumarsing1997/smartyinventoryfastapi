@@ -4,81 +4,30 @@ from pydantic import BaseModel
 from typing_extensions import Annotated
 from src.app.user.user_iservice import IUserService
 from src.app.user.user_service import UserService
-from src.app.shared.response import Response
 # from src.app.user.user_schema import CreateUserRequest
 from starlette import status
 from src.app.config.db_config import SessionLocal
 from sqlalchemy.orm import Session
 from src.app.models.model import Users
+from src.app.user.user_schema import CreateUserRequest
+from src.app.shared.response import CreateUserResponse
 
 userRouter = APIRouter(prefix="/user",tags=["User"])
-# UserServiceIns = Annotated(IUserService,Depends(UserService))
-UserServiceIns:UserService = Depends()
 
 
+UserServiceIns = Annotated[IUserService,Depends(UserService)]
 
 
-# @userRouter.get("/")
-# async def root():
-#     return {"message": "Hello World"}
-
-
-class CreateUserRequest(BaseModel):
-    username:str
-    email:str
-    first_name:str
-    last_name:str
-    password:str
-    role:str
-
-# class Token(BaseModel):
-#     access_token:str
-#     token_type:str
-
-# def get_db():
-#     db=SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency=Annotated[Session,Depends(get_db)]
-
-# db_dependency=Annotated[Session,Depends(get_db)]
-
-#for authenticate user
-
-
-# @userRouter.get("/")
-# async def root():
-#     # return {"message": "Hello World"}
-#     print(db_dependency.commit)
-
-
-@userRouter.post("/",status_code=status.HTTP_201_CREATED)
-async def create_user(db:db_dependency,
-                      create_user_request: CreateUserRequest):
-    create_user_model=Users(
-        email=create_user_request.email,
-        username=create_user_request.username,
-        first_name=create_user_request.first_name,
-        last_name=create_user_request.last_name,
-        role=create_user_request.role,
-        hashed_password=create_user_request.password,
-        # hashed_password=bcrypt_context.hash(create_user_request.password),
-        is_active=True
-    )
-    db.add(create_user_model)
-    db.commit()
+@userRouter.post("/",status_code=status.HTTP_201_CREATED,response_model=CreateUserResponse)
+async def create_user(
+    create_user_request: CreateUserRequest,
+    service:UserServiceIns
+):
+    # print(type(service))
+    await service.reg_user(create_user_request)
+    print("hello amit")
+    return CreateUserResponse()
+  
 
 
 

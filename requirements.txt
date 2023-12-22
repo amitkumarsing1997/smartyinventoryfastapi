@@ -1,9 +1,13 @@
-fastapi
-sqlalchemy
-uvicorn
-passlib[bcrypt]
+fastapi~=0.104.1
+sqlalchemy~=2.0.23
+uvicorn~=0.24.0.post1
+bcrypt==4.0.1
+passlib[bcrypt]~=1.7.4
 python-multipart
 python-jose[cryptoraphy]
 psycopg2-binary
 pymysql
 
+
+pydantic~=2.5.2
+starlette~=0.27.0

@@ -61,10 +61,10 @@ class Settings(BaseSettings):
 
 # make an entry here if you are creating new env
 config = dict(
-    dev='src/resource/env/dev.env',
-    test='src/resource/env/test.env',
-    uat='src/resource/env/uat.env',
-    prod='src/resource/env/prod.env'
+    dev='src2/resource/env/dev.env',
+    test='src2/resource/env/test.env',
+    uat='src2/resource/env/uat.env',
+    prod='src2/resource/env/prod.env'
 )
 
 
@@ -73,4 +73,4 @@ config = dict(
 
 @lru_cache
 def get_setting() -> Settings:
-    return Settings(_env_file=("src/resource/env/.env", config[os.environ.get('ENV', 'dev').lower()]))
+    return Settings(_env_file=("src2/resource/env/.env", config[os.environ.get('ENV', 'dev').lower()]))

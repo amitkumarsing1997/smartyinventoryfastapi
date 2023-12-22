@@ -1,44 +1,149 @@
 from fastapi import Depends
-from src.app.config.db_config import SessionLocal
 from sqlalchemy.orm import Session
-from typing import Annotated
+from src.app.config.db_config import Database
 from src.app.user.user_schema import CreateUserRequest
 from src.app.models.model import Users
+from typing import Annotated
+from src.app.config.db_config import SessionLocal
+
+# def get_db():
+#     db=SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 
+# db_dependency=Annotated[Session,Depends(get_db)]
 
 
+# class UserRepo:
+#     def __init__(self,db:Session=Depends(get_db))->None:
+#         self.db=db     
+#     async def create_user(self, create_user_request:CreateUserRequest):
+#         create_user_model = Users(
+#             email=create_user_request.email,
+#             username=create_user_request.username,
+#             first_name=create_user_request.first_name,
+#             last_name=create_user_request.last_name,
+#             role=create_user_request.role,
+#             hashed_password=create_user_request.password,
+#             # hashed_password=bcrypt_context.hash(create_user_request.password),
+#             is_active=True
+#         )
+       
+#         print("??????")
+#         print (type(create_user_model))
+#         # print(type(self.db)
+#         print("&&&&&")
+#         # self.db.add(create_user_model)
+#         # self.db.commit()
+#         # return create_user_model
 
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency=Annotated[Session,Depends(get_db)]
+# db=Database()
 
 
 class UserRepo:
-    def __init__(self,db:Session=db_dependency)->None:
-        self.db=db
+    def __init__(self, db:Database=Depends()) -> None:
+        self.db = db
 
-    
-    async def create_user(self,create_user_request: CreateUserRequest):
+# class UserRepo:
+#     def __init__(self, db: Database = Depends()) -> None:
+#         self.db = db
+
+    async def create_user(self, create_user_request: CreateUserRequest):
         create_user_model = Users(
             email=create_user_request.email,
             username=create_user_request.username,
             first_name=create_user_request.first_name,
-            last_name = create_user_request.last_name,
+            last_name=create_user_request.last_name,
             role=create_user_request.role,
-            hashed_password = create_user_request.password,
+            hashed_password=create_user_request.password,
             is_active=True
-            )
-        self.db.add(create_user_model)
-        self.db.commit
-        # return "user successfully created"
+        )
+        
+        print("$$$self db class")
+        print(type(self.db))
+        # print(self.db.add(create_user_model))
+        print(type(self.db.get_db().add(create_user_model)))
+        # self.db.get_db().add(create_user_model).commit()
+       
+        # Use the Database class as a context manager
+        # with self.database.get_db() as db:
+        #     try:
+        #         db.add(create_user_model)
+        #         db.commit()
+        #         db.refresh(create_user_model)
+        #         print("User created successfully")
+        #     except Exception as e:
+        #         db.rollback()
+        #         raise e
+
+
+# 
+
+# from fastapi import Depends
+# from src.app.config.db_config import SessionLocal
+# from sqlalchemy.orm import Session
+# from typing import Annotated
+# from src.app.user.user_schema import CreateUserRequest
+# from src.app.models.model import Users
+# from src.app.config.db_config import Database
+
+
+
+
+
+
+# def get_db():
+#     db=SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
+
+
+# db_dependency=Annotated[Session,Depends(get_db)]
+
+# db_dependency=Annotated[Session,Depends(get_db)]
+
+
+# class UserRepo:
+#     def __init__(self,db:Session=db_dependency)->None:
+#         self.db=db
+
+# dbobj = Database()
+# # dbobj.
+
+# # db_dependency=Annotated[Session,Depends(get_db)]
+# # class UserRepo:
+# #     def __init__(self,db:Session=dbobj.get_db) -> None:
+# #         self.db=db
+
+# class UserRepo:
+#     def __init__(self,dbobj) -> None:
+#         self.dbobj=dbobj
+        
+#     async def create_user(self, create_user_request:CreateUserRequest):
+#         create_user_model = Users(
+#             email=create_user_request.email,
+#             username=create_user_request.username,
+#             first_name=create_user_request.first_name,
+#             last_name=create_user_request.last_name,
+#             role=create_user_request.role,
+#             hashed_password=create_user_request.password,
+#             # hashed_password=bcrypt_context.hash(create_user_request.password),
+#             is_active=True
+#         )
+#         # self.db
+#         # print(type(self.db))
+#         # self.db.add(create_user_model)
+#         # await self.db.commit()
+#         # print("Successfully created")
+#         print (type(create_user_model))
+#         print("databae object")
+#         print(type(dbobj))
+#         # return create_user_model
     
 
 # @router.post("/",status_code=status.HTTP_201_CREATED)
