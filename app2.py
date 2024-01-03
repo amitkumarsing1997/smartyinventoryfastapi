@@ -21,6 +21,8 @@ from src2.app.auth import auth_router
 from src2.app.admin import admin_router
 from src2.app.todos import todos_router
 from src2.app.config.authkey import oauth2_bearer
+from src2.app.muser import user_router_mongo
+from src2.app.minvitation import invitation_router
 
 
 # import starlette.status
@@ -52,6 +54,8 @@ app.include_router(user_router.userRouter)
 app.include_router(auth_router.authRouter)
 app.include_router(admin_router.adminRouter)
 app.include_router(todos_router.todosRouter,dependencies=[Depends(get_current_user)])
+app.include_router(user_router_mongo.userRouterMongo)
+app.include_router(invitation_router.invitationMongoRepo)
 # app.include_router(todos.router)
 # app.include_router(admin.router)
 # app.include_router(users.router)

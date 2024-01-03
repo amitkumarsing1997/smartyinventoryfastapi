@@ -63,6 +63,8 @@ async def create_user(
     # log.debug(f" RES OF result : : {await service.reg_user(create_user_request,db)}")
     return Response[AuthResponse](body = await service.reg_user(create_user_request,db))
 
+
+
 @authRouter.post("/login/user",status_code=status.HTTP_202_ACCEPTED,response_model=Response[AuthResponse[UserRespSchema]])
 async def login(username: Annotated[str, Form()],
                 password: Annotated[str, Form()],
@@ -70,7 +72,6 @@ async def login(username: Annotated[str, Form()],
                 service:AuthServiceIns):
     log.debug(f" USER Email is : : {await service.auth_user(username,password,db)}")
     print("in User ROUTER----->")
-
     user_auth = await service.auth_user(username,password,db)
     return Response[AuthResponse[UserRespSchema]](body = await service.auth_user(username,password,db))
 
