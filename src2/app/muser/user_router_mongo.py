@@ -16,11 +16,6 @@ async def insertUserIfNotPresentInCollection(userschema: UserMongoSchema, servic
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
-@userRouterMongo.post("/login/user")
-async def login(username: Annotated[str, Form()],
-                password: Annotated[str, Form()],
-                service:UserServiceMongoIns):
-    user_auth = await service.authenticate_user(username,password)
-    return JSONResponse(status_code=200 , content={"message": "user has been authenticated"})
+
 
 

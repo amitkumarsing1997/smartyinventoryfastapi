@@ -79,14 +79,6 @@ class UserServiceMongo(IUserServiceMongo):
         await send_with_template(token_dict)
 
 
-    async def authenticate_user(self,username,password):
-        print("in authenticate user service--------")
-        userobj = await UserRepoMongo.find_user({"email": username})
-        if not userobj:
-            raise GenericException(msg="user email incorrect", msg_code="500")
-        if not bcrypt_context.verify(password, userobj.get("password")):
-            raise GenericException(msg="user password incorrect", msg_code="500")
-        return userobj
 
     async def update_user_password(self,id,password):
         print("in update user service----")

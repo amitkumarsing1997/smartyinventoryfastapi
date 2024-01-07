@@ -4,6 +4,10 @@ from src2.app.minvitation.invitation_repo import InvitationRepoMongo
 from _datetime import datetime,timedelta
 import uuid
 from fastapi import HTTPException
+import logging
+
+log = logging.getLogger()
+
 
 
 class InvitationService(IInvitationService):
@@ -29,6 +33,9 @@ class InvitationService(IInvitationService):
             and invitation_doc.get("expire_on") > datetime.now():
             # print(type(invitation_doc))
             # if invitation_doc.get("status")=="ACTIVE"
+            log.debug(f"token valid : : {invitation_doc}")
+            print("in token valid------->>>>>")
+
             return invitation_doc
         # raise GenericException(msg="invitaton token is not found>>>>", msg_code="500"
         # raise HTTPException(msg="invitaton token is not found>>>>", msg_code="200")
