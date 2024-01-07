@@ -24,3 +24,13 @@ class Todos(Base):
     priority=Column(Integer)
     complete=Column(Boolean,default=False)
     owner_id=Column(Integer,ForeignKey("users.id"))
+
+class ProductCategory(Base):
+    __tablename__='product_category'
+    id = Column(Integer, primary_key=True, index=True)
+    uid=Column(String)
+    is_deleted=Column(Integer)
+    name=Column(String)
+    user_id=Column(Integer,ForeignKey("users.id"))
+
+
